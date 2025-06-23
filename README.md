@@ -101,6 +101,9 @@ oc adm release extract --cloud=gcp --credentials-requests $RELEASE_IMAGE --to=./
 ```bash
 ccoctl gcp create-service-accounts --name=${GCP_SERVICE_ACCOUNT_PREFIX} --project=${GCP_PROJECT} --credentials-requests-dir=credreqs --workload-identity-pool=${WORKLOAD_IDENTITY_POOL} --workload-identity-provider=${WORKLOAD_IDENTITY_PROVIDER}
 ```
+### Edit manifests/cluster-authentication-02-config.yaml
+
+Change serviceAccountIssuer: to the URL you would like to use
 
 ## Create install configuration files
 Switch to the installer directory we created
