@@ -1,0 +1,39 @@
+credentialsMode: Manual
+additionalTrustBundlePolicy: Proxyonly
+apiVersion: v1
+baseDomain: gcp.mobb.cloud
+compute:
+- architecture: amd64
+  hyperthreading: Enabled
+  name: worker
+  platform: {}
+  replicas: 3
+controlPlane:
+  architecture: amd64
+  hyperthreading: Enabled
+  name: master
+  platform: {}
+  replicas: 3
+metadata:
+  creationTimestamp: null
+  name: kmc-gcp
+networking:
+  clusterNetwork:
+  - cidr: 10.128.0.0/14
+    hostPrefix: 23
+  machineNetwork:
+  - cidr: 10.0.0.0/16
+  networkType: OVNKubernetes
+  serviceNetwork:
+  - 172.30.0.0/16
+platform:
+  gcp:
+    projectID: mobb-demo
+    region: us-east1
+    network: ocp-selfmanged
+    controlPlaneSubnet: control-plane-selfmanaged
+    computeSubnet: worker-selfmanaged
+publish: External
+pullSecret: '{"auths":{"cloud.openshift.com":{"auth":"...'
+sshKey: |
+  ssh-rsa ...
