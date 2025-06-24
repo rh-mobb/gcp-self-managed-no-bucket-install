@@ -1,4 +1,4 @@
-# Use Red Hat's Universal Base Image for Nginx
+# Use Red Hat's Univeral Base Image for nginx
 FROM registry.access.redhat.com/ubi8/nginx-120
 
 USER root
@@ -7,7 +7,16 @@ USER root
 RUN mkdir -p /etc/nginx/html/.well-known/
 RUN chown -R nginx:nginx /etc/nginx/html
 
+# Copy your custom Nginx configuration file
+# This will override or supplement the default config depending on the base image
+COPY nginx.conf /etc/nginx/nginx.conf
+RUN chown -R nginx:nginx /etc/nginx/nginx.conf
+RUN chown -R nginx:nginx /var/log/nginx
+RUN chown -R nginx:nginx /var/lib/nginx/
+RUN chown -R nginx:nginx /var/run/
 USER nginx
+
+
 
 # Copy the keys.json file into the Nginx web root
 # This file typically contains public keys for verifying digital signatures
@@ -18,8 +27,8 @@ COPY keys.json /etc/nginx/html/
 COPY openid-configuration /etc/nginx/html/.well-known/
 
 
-# Expose port 80, which is the default HTTP port Nginx listens on
-EXPOSE 80
+# Expose port 8080, which is the default HTTP port Nginx listens on
+EXPOSE 8080
 
 # Command to run Nginx in the foreground
 # This keeps the container running
