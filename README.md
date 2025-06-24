@@ -146,14 +146,29 @@
     oc adm release extract --cloud=gcp --credentials-requests ${RELEASE_IMAGE} --to=./credreqs
     ``` 
 
-1. Create the Google Cloud service accounts:
+1. Create the Google Cloud service accounts for cluster operators:
 
     ```bash
     ccoctl gcp create-service-accounts --name=${GCP_SERVICE_ACCOUNT_PREFIX} --project=${GCP_PROJECT} --credentials-requests-dir=credreqs --workload-identity-pool=${WORKLOAD_IDENTITY_POOL} --workload-identity-provider=${WORKLOAD_IDENTITY_PROVIDER}
     ```
-    
+
+1. Create the Google Cloud service accounts for node instances:
+
+    ```bash
+    gcloud iam service-accounts create ${GCP_SERVICE_ACCOUNT_PREFIX}-worker --display-name="${GCP_SERVICE_ACCOUNT_PREFIX}-worker"
+    gcloud projects add-iam-policy-binding ${GCP_PROJECT} --member="serviceAccount:${GCP_SERVICE_ACCOUNT_PREFIX}-worker@${GCP_PROJECT}.iam.gserviceaccount.com" --role="roles/compute.viewer"
+    gcloud projects add-iam-policy-binding ${GCP_PROJECT} --member="serviceAccount:${GCP_SERVICE_ACCOUNT_PREFIX}-worker@${GCP_PROJECT}.iam.gserviceaccount.com" --role="roles/compute.storageAdmin"
+    gcloud iam service-accounts create ${GCP_SERVICE_ACCOUNT_PREFIX}-control-plane --display-name="${GCP_SERVICE_ACCOUNT_PREFIX}-control-plane"
+    gcloud projects add-iam-policy-binding ${GCP_PROJECT} --member="serviceAccount:${GCP_SERVICE_ACCOUNT_PREFIX}-control-plane@${GCP_PROJECT}.iam.gserviceaccount.com" --role="role/compute.instanceAdmin.v1"
+    gcloud projects add-iam-policy-binding ${GCP_PROJECT} --member="serviceAccount:${GCP_SERVICE_ACCOUNT_PREFIX}-control-plane@${GCP_PROJECT}.iam.gserviceaccount.com" --role="roles/compute.networkAdmin"
+    gcloud projects add-iam-policy-binding ${GCP_PROJECT} --member="serviceAccount:${GCP_SERVICE_ACCOUNT_PREFIX}-control-plane@${GCP_PROJECT}.iam.gserviceaccount.com" --role="roles/compute.securityAdmin"
+    gcloud projects add-iam-policy-binding ${GCP_PROJECT} --member="serviceAccount:${GCP_SERVICE_ACCOUNT_PREFIX}-control-plane@${GCP_PROJECT}.iam.gserviceaccount.com" --role="roles/compute.storageAdmin"
+    ```
+    > *Note:* Ensure the service accounts created in this step are properly referenced in the `install-config.yaml` file. 
+  
 1. Edit the `manifests/cluster-authentication-02-config.yaml` file with the updated issuer URL.
      - Change `serviceAccountIssuer:` to the updated issuer URL that will contain the OIDC provider configuration.
+  
 
 ## Create the OpenShift installation configuration files
 
